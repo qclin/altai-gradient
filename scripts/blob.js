@@ -51,11 +51,9 @@ class Blob {
       py=this.y+this.points[i].y+this.dia*noisefactor*(1-2*noise(noisescale*(this.points[i].x+this.x+this.offset2), noisescale*(this.points[i].y+this.y+this.offset2)));
 
       vertex(px, py);
-
-
-      // let point = createVector(px, py);
-      // this.path.push(point);
-
+      /// here create an array to store the points of the blob edges
+      let point = createVector(px, py);
+      this.path.push(point);
 
       if (!collide&&(px+this.vx<0||px+this.vx>width)){
         this.vx=-this.vx;
@@ -68,24 +66,6 @@ class Blob {
     }
     endShape();
 
-    beginShape();
-    var i;
-
-    for (var j=0; j<=this.n; j++) {
-
-      var gradColor = lerpColor(this.huFrom, this.huTo, cos(j));
-      var gradColor2 = lerpColor(this.huFrom, this.huTo, sin(j));
-      fill(color(this.huFrom[0], this.huFrom[1], this.huFrom[2], 155));
-      stroke(color(gradColor2.levels[0], gradColor2.levels[1], gradColor2.levels[2], 155));
-
-      i=j%this.n;
-      px=noisefactor*(1-2*noise(noisescale*(this.points[i].x+this.x+this.offset1), noisescale*(this.points[i].y+this.y+this.offset1)));
-      py=noisefactor*(1-2*noise(noisescale*(this.points[i].x+this.x+this.offset2), noisescale*(this.points[i].y+this.y+this.offset2)));
-
-      vertex(px, py);
-    }
-
-    endShape();
   }
 
 }

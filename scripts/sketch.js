@@ -1,3 +1,5 @@
+let qtree;
+
 var zones = [];
 var repellers = [];
 var boids = [];
@@ -10,7 +12,6 @@ var maxdia;
 var noisescale=.001; //.001
 var noisefactor=2;
 var skipRate = 1;
-var envInterval
 
 var cosmos = [];
 var showCosmo = false;
@@ -32,55 +33,64 @@ var milli;
 //   }
 // }
 
+var canvasW = 1920;
+var canvasH = 1080;
+
+
+
 function setup() {
-  createCanvas(windowWidth, windowHeight);
-  grid = new Grid();
+
+  createCanvas(canvasW, canvasH);
+
+  let boundary = new Rectangle(0,0,canvasW, canvasH);
+  qtree = new QuadTree(boundary, 4);
+
+  grid = new Grid(canvasW, canvasH);
   grid.setup();
-  maxdia=windowWidth/5;
-  addZone1();
-  addZone2();
-  addZone3();
-  addZone4();
 
+  maxdia=canvasH/5;
+
+
+  setTimeout(setupBlob, 10000);
 
 }
 
+function setupBlob(){
+  for (var i = 0 ; i < 4; i ++){
+    var x = random(width/2-maxdia,width/2+maxdia);
+    var y = random(height/2-maxdia,height/2+maxdia);
+    var dia=maxdia*random(.8, 1.2);
 
-function addZone1(){
-    // var x = random(maxdia,width-maxdia);
-    // var y = random(maxdia,height-maxdia);
-
-    var x = random(width/2-maxdia/2,width/2+maxdia/2);
-    var y = random(height/2 - maxdia/2,height/2-maxdia);
-    addBlob(x, y);
-}
-function addZone2(){
-    var x = random(width/2+maxdia/2,width-maxdia/2);
-    var y = random(maxdia/2,height/2-maxdia);
-
-    addBlob(x, y);
-}
-function addZone3(){
-    var x = random(width/2-maxdia/2,width/2-maxdia/2);
-    var y = random(height/2,height-maxdia);
-    addBlob(x, y);
-}
-function addZone4(){
-    var x = random(width/2+maxdia/2,width-maxdia/2);
-    var y = random(height/2+maxdia,height-maxdia);
-    addBlob(x, y);
+    addBlob(x, y, dia);
+  }
 }
 
+function drawQTree(){
+  var p = new Point(random(0,width), random(0,height));
+  qtree.insert(p);
+  qtree.show();
 
-function addBlob(x, y){
+  stroke(0, 255, 0);
+  rectMode(CENTER);
+  let range = new Rectangle(mouseX, mouseY, 25, 25);
+  rect(range.x, range.y, range.w * 2, range.h * 2);
+  let points = qtree.query(range);
+  for (let p of points) {
+    strokeWeight(4);
+    point(p.x, p.y);
+  }
+}
+
+function addBlob(x, y, dia){
   noisescale += 0.000001
-  var dia=maxdia*random(1, 1.2);
 
   // Choose, assign, splice
   var colorIndex = Math.floor(random(altaiColors.length))
   col = altaiColors[colorIndex];
   altaiColors.splice(colorIndex, 1);
   var one = new Blob(x, y, dia, int(dia/2), col);
+  // var one = new Blob(x, y, col.from, col.to, 200);
+
   zones.push(one);
 
   var population = random(1, 50);
@@ -116,52 +126,73 @@ function mousePressed(){
 
 function draw() {
   background(255);
-  grid.display();
-
-
-  if(zones.length == 4){
-    clearInterval(envInterval)
+  new Rectangle(0, 0, canvasW, canvasH);
+  // grid.display();
+  var timePassed = millis()
+  if( timePassed < 8000){
+    drawQTree();
+  }
+  if( 5000 < timePassed && timePassed < 60000){
+    grid.display();
   }
 
+
+  if(timePassed > 5000){
+    drawEnvironment();
+  }
+
+
+
+
+  // for (var i=0; i<repellers.length; i++) {
+  //   repellers[i].display();
+  // }
+
+  // drawCosmos();
+
+}
+
+
+function drawEnvironment(){
   for (var i=0; i<zones.length; i++) {
     zones[i].display();
     var oneflock = boids[i];
 
     // var chooseCos = floor(random(0, cosmos.length))
     // image(cosmos[i], zones[i].x + sin(360) * 8, zones[i].y + sin(360) * 8);
+    console.log( "drawEnvironment ---- ", oneflock)
 
-    /// BOID TYPE 0
-    var center = createVector(zones[i].x, zones[i].y)
-    for (var j = 0; j < oneflock.length; j++) {
-      var b = oneflock[j];
+    drawPopulation(oneflock, i)
 
-      if(minute()%2 == 1){
-        console.log(' we are herer ----- ', minute()%4)
-        b.seek(center);
-      }else{
-        // b.follow(zones[i].path);
-      }
-      b.flock(oneflock);
-
-      // b.flock(oneflock);
-      b.update();
-      b.checkEdges();
-      b.display();
-      b.drawTraces();
-
-      // boidsHistory[i].push(boids[i].pos);
-    }
   }
-  // for (var i=0; i<repellers.length; i++) {
-  //   repellers[i].display();
-  // }
+}
 
-  // /// BOID TYPE 1
-  // flock.run();
-  // flock.target(createVector(200, 200));
+function drawPopulation(oneflock, i){
+  console.log( 'hereeee ')
+  /// BOID TYPE 0
+  var center = createVector(zones[i].x, zones[i].y)
+  for (var j = 0; j < oneflock.length; j++) {
+    var b = oneflock[j];
 
-  // drawCosmos();
+    if(minute()%2 == 1){
 
+      var edgePoint = zones[i].path[j + second()]
+      console.log(edgePoint )
+      b.seek(edgePoint);
+    }else{
+      b.seek(center);
+      // b.seek(zones[i].path[]);
+    }
+    b.flock(oneflock);
+
+    // b.flock(oneflock);
+    b.update();
+    b.checkEdges();
+    b.display();
+    b.drawTraces();
+
+    // boidsHistory[i].push(boids[i].pos);
+  }
 }
 
 function drawCosmos(){

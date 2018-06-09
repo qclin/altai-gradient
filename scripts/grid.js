@@ -1,21 +1,23 @@
 class Grid{
-  constructor(){
-    this.numberOfRows = 10;
-    this.numberOfColumns = 20;
+  constructor(w, h){
+    this.numberOfRows = 16;
+    this.numberOfColumns = 16;
 
-    this.xStep = width/this.numberOfColumns;
-    this.yStep = height/this.numberOfRows;
+    this.xStep = w/this.numberOfColumns;
+    this.yStep = h/this.numberOfRows;
 
     this.positions = [];
     this.lines = [];
-
+    this.w = w;
+    this.h = h;
+    this.colors = [255, 0];
+    this.strokealpha = [0, 0.2];
   }
 
-
-
   setup(){
-    for(var x = 0; x < width; x += this.xStep){
-      for(var y = 0; y < height; y += this.yStep){
+
+    for(var x = 0; x < this.w; x += this.xStep * Math.floor(random(1, 3))){
+      for(var y = 0; y < this.h; y += this.yStep * Math.floor(random(1, 3))){
         var p = createVector(x, y);
         this.positions.push(p);
       }
@@ -24,56 +26,11 @@ class Grid{
 
 
   display(){
-    fill(200);
     stroke(0, 1);
-
-    for(var i = 0; i < this.positions.length; i++){
+    fill(155);
+    for(var i = 0; i < this.positions.length; i ++){
       rect(this.positions[i].x, this.positions[i].y, 3, 3);
       line(this.positions[i].x, this.positions[i].y, this.positions[i].x+10, this.positions[i].y+10);
     }
   }
 }
-
-//
-//
-// function setup(){
-//
-//   createCanvas(2000, 1000);
-//   background(255);
-//   noStroke();
-//
-//   numberOfColumns = 20;
-//   numberOfRows = 10;
-//
-//   xStep = width/numberOfColumns;
-//   yStep = height/numberOfRows;
-//
-//   for(var x = 0; x < width; x += xStep){
-//     for(var y = 0; y < height; y += yStep){
-//
-//       var p = createVector(x, y);
-//
-//       positions.push(p);
-//
-//     }
-//   }
-// }
-//
-// function draw(){
-//   fill(0, 0, 0);
-//   stroke(0, 1);
-//
-//   for(var i = 0; i < positions.length; i++){
-//     rect(positions[i].x, positions[i].y, 3, 3);
-//     line(positions[i].x, positions[i].y,positions[i].x+10, positions[i].y+10);
-//   }
-//
-//   // for (var x = 0; x < width; x += width / numberOfColumns) {
-// 		// for (var y = 0; y < height; y += height / numberOfRows) {
-// 		// 	stroke(0);
-// 		// 	strokeWeight(1);
-// 		// 	line(x, 0, x, height);
-// 		// 	line(0, y, width, y);
-// 		// }
-//   //  }
-// }

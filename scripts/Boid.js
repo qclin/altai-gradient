@@ -217,18 +217,19 @@ class Boid {
             for(var i = 0; i < this.history.length-2; i++){
               var pos = this.history[i];
               var next = this.history[i+2];
-              
+
               var diff = next.sub(pos);
               diff.normalize();
               diff.rotate(90);
               diff.mult(map(noise(pos.x / 100, pos.y / 100), 0, 1, -1, 1));
               console.log( "+++++++++normalize+++++======= ",diff)
               pos += diff;
-              // if (i % 15 < 4) {
-              //   line(pos.x, pos.y, next.x, next.y);
-              //   // line(next.x+5, next.y+5, last.x, last.y);
-              // }
+              if (i % 15 < 4) {
+                line(pos.x, pos.y, next.x, next.y);
+                // line(next.x+5, next.y+5, last.x, last.y);
+              }
               // first few add concentric rings
+
             }
 
             break;

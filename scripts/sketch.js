@@ -165,22 +165,20 @@ function drawEnvironment(){
 
     // var chooseCos = floor(random(0, cosmos.length))
     // image(cosmos[i], zones[i].x + sin(360) * 8, zones[i].y + sin(360) * 8);
-    console.log( "drawEnvironment ---- ", oneflock)
     var qt = new QuadTree(boundary, 4);
+    zones[i].quadtree = qt;
 
     drawPopulation(oneflock, i, qt)
 
   }
 }
 
-function drawPopulation(oneflock, i){
-  console.log( 'hereeee ')
+function drawPopulation(oneflock, i, qt){
   /// BOID TYPE 0
   var center = createVector(zones[i].x, zones[i].y)
   for (var j = 0; j < oneflock.length; j++) {
-
-
     var b = oneflock[j];
+    zones[i].quadtree.insert(oneflock[j].pos)
 
     if(minute()%2 == 1){
 

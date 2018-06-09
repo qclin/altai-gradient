@@ -27,6 +27,7 @@ class Blob {
     }
 
     this.path = [];
+    this.quadtree;
   }
 
 

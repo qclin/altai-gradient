@@ -1,7 +1,7 @@
 "use strict";
 
 class Boid {
-  constructor(x, y, targetX, targetY, skipRate, col, maxSpeed, traceLength) {
+  constructor(x, y, targetX, targetY, skipRate, col, maxSpeed, traceLength, lineType) {
     this.targetX = targetX;
     this.targetY = targetY;
     this.skipRate = skipRate;
@@ -23,6 +23,7 @@ class Boid {
     this.separateScalar = 1;
     this.cohesionScalar = 1;
     this.alignScalar = 1;
+    this.lineType = lineType;
   }
   update() {
     this.vel.add(this.acc);
@@ -60,7 +61,7 @@ class Boid {
 
     sepaForce.mult(this.separateScalar);
     coheForce.mult(this.cohesionScalar);
-    alignForce.multi(this.alignScalar);
+    alignForce.mult(this.alignScalar);
 
     //seekForce.mult(1.3);
     sepaForce.div(0.5);
@@ -163,23 +164,81 @@ class Boid {
       this.pos.y = 0;
     }
   }
+  // drawTraces(){
+  //   for(var i = 0; i < this.history.length-1; i++){
+  //     var pos = this.history[i];
+  //     fill(100);
+  //     // if (i % 2 == 0) {
+  //     //   line(this.history[i].x, this.history[i].y, this.history[i + 1].x, this.history[i + 1].y);
+  //     // }
+  //
+  //     if (i % 50 < 40) {
+  //       line(this.history[i].x, this.history[i].y, this.history[i + 1].x, this.history[i + 1].y);
+  //     }
+  //     // line(this.history[i].x, this.history[i].y, this.history[i + 1].x, this.history[i + 1].y);
+  //     // ellipse(pos.x, pos.y, sin(0)*i+1, sin(0)*i+1);
+  //
+  //   }
+  // }
+
+
   drawTraces(){
-    for(var i = 0; i < this.history.length-1; i++){
-      var pos = this.history[i];
-      fill(100);
-      if (i % 2 == 0) {
-        line(this.history[i].x, this.history[i].y, this.history[i + 1].x, this.history[i + 1].y);
-      }
-      // line(this.history[i].x, this.history[i].y, this.history[i + 1].x, this.history[i + 1].y);
-      // ellipse(pos.x, pos.y, sin(0)*i+1, sin(0)*i+1);
+    switch(this.lineType) {
+        case "dotted":
+          for(var i = 0; i < this.history.length-1; i++){
+            var pos = this.history[i];
+            var next = this.history[i + 1];
+            noFill();
+
+            if (i % 4 == 1) {
+              line(pos.x, pos.y, next.x, next.y);
+            }
+
+            // first few add concentric rings
+            if( i % 10 > 8 && i > this.history.length/2){
+              fill(this.col.to)
+              strokeWeight(2)
+              ellipse( pos.x, pos.y, 10, 10);
+            }
+          }
+
+            break;
+        case "long":
+            for(var i = 0; i < this.history.length-1; i++ ){
+              var pos = this.history[i];
+              fill(0);
+              if (i % 5 < 4) {
+                  line(this.history[i].x, this.history[i].y, this.history[i + 1].x, this.history[i + 1].y);
+              }
+              // first few add concentric rings
+            }
+        case "noise":
+
+            for(var i = 0; i < this.history.length-2; i++){
+              var pos = this.history[i];
+              var next = this.history[i+2];
+              
+              var diff = next.sub(pos);
+              diff.normalize();
+              diff.rotate(90);
+              diff.mult(map(noise(pos.x / 100, pos.y / 100), 0, 1, -1, 1));
+              console.log( "+++++++++normalize+++++======= ",diff)
+              pos += diff;
+              // if (i % 15 < 4) {
+              //   line(pos.x, pos.y, next.x, next.y);
+              //   // line(next.x+5, next.y+5, last.x, last.y);
+              // }
+              // first few add concentric rings
+            }
+
+            break;
+        default:
 
     }
   }
 
   display() {
 
-
-    fill(100);
     ellipse(this.pos.x, this.pos.y, 4, 4);
     // push();
     //   translate(this.pos.x, this.pos.y);

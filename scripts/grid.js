@@ -29,7 +29,7 @@ class Grid{
     stroke(0, 1);
     fill(155);
     for(var i = 0; i < this.positions.length; i ++){
-      rect(this.positions[i].x, this.positions[i].y, 3, 3);
+      rect(this.positions[i].x, this.positions[i].y, 8, 8);
       line(this.positions[i].x, this.positions[i].y, this.positions[i].x+10, this.positions[i].y+10);
     }
   }

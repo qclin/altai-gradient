@@ -12,6 +12,7 @@ var maxdia;
 var noisescale=.001; //.001
 var noisefactor=2;
 var skipRate = 1;
+var lineType = ["dotted", "long" , "noise"]
 
 var cosmos = [];
 var showCosmo = false;
@@ -27,6 +28,9 @@ var altaiColors = [
 var col;
 var grid;
 var milli;
+
+
+
 // function preload(){
 //   for(var i = 0; i < 4; i++){
 //     cosmos.push(loadImage(`assets/cosmoSVG/cosmo_${i+1}.svg`));
@@ -104,11 +108,15 @@ function addBlob(x, y, dia){
   boids.push([]);
 
   /// BOID TYPE 0
+  var lt = lineType[Math.floor(random(lineType.length))]
+
   for (var i = 0; i < population; i++) {
     var posX = random(0,width);
     var posY = random(0,height);
-    var traceLength = random(5, 100);
-    boids[boids.length - 1].push(new Boid(posX, posY, x, y, skipRate, col, maxSpeed, traceLength));
+    var traceLength = random(50, 100);
+
+
+    boids[boids.length - 1].push(new Boid(posX, posY, x, y, skipRate, col, maxSpeed, traceLength, lt));
   }
 
   // blue nodes
@@ -134,6 +142,7 @@ function draw() {
   // grid.display();
   var timePassed = millis()
   if( timePassed < 8000){
+    background(0);
     drawQTree();
   }
   if( 5000 < timePassed && timePassed < 60000){
@@ -152,7 +161,7 @@ function draw() {
   //   repellers[i].display();
   // }
 
-  // drawCosmos();
+
 
 }
 
@@ -165,11 +174,16 @@ function drawEnvironment(){
 
     // var chooseCos = floor(random(0, cosmos.length))
     // image(cosmos[i], zones[i].x + sin(360) * 8, zones[i].y + sin(360) * 8);
+    // var qt = new QuadTree(boundary, 4);
     var qt = new QuadTree(boundary, 4);
+    for (var j = 0; j < oneflock.length; j++) {
+      qt.insert(oneflock[j].pos)
+    }
     zones[i].quadtree = qt;
 
-    drawPopulation(oneflock, i, qt)
+    drawPopulation(oneflock, i, qt);
 
+    // drawCosmos();
   }
 }
 
@@ -178,27 +192,22 @@ function drawPopulation(oneflock, i, qt){
   var center = createVector(zones[i].x, zones[i].y)
 
   for (var j = 0; j < oneflock.length; j++) {
-    zones[i].quadtree.insert(oneflock[j].pos)
-  }
-
-  for (var j = 0; j < oneflock.length; j++) {
     var b = oneflock[j];
     if(minute()%2 == 1){
-
       var edgePoint = zones[i].path[j + second()]
-      console.log(edgePoint )
       b.seek(edgePoint);
     }else{
       b.seek(center);
       // b.seek(zones[i].path[]);
     }
 
-    var rect = new Rectangle(oneflock[j].pos.x - 10000, oneflock[j].pos.x + 10000,  oneflock[j].pos.y - 10000, oneflock[j].pos.y + 10000);
+    ///// attempt to add Quadtree to the blobs
+    // var rect = new Rectangle(oneflock[j].pos.x - 10000, oneflock[j].pos.x + 10000,  oneflock[j].pos.y - 10000, oneflock[j].pos.y + 10000);
+    // b.flock(zones[i].quadtree.query(rect));
+    // console.log(zones[i].quadtree.query(rect).length)
 
-    b.flock(zones[i].quadtree.query(rect));
-
-
-    // b.flock(oneflock);
+    b.separateScalar += 0.1 * i
+    b.flock(oneflock);
     b.update();
     b.checkEdges();
     b.display();

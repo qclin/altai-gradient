@@ -176,10 +176,13 @@ function drawEnvironment(){
 function drawPopulation(oneflock, i, qt){
   /// BOID TYPE 0
   var center = createVector(zones[i].x, zones[i].y)
+
+  for (var j = 0; j < oneflock.length; j++) {
+    zones[i].quadtree.insert(oneflock[j].pos)
+  }
+
   for (var j = 0; j < oneflock.length; j++) {
     var b = oneflock[j];
-    zones[i].quadtree.insert(oneflock[j].pos)
-
     if(minute()%2 == 1){
 
       var edgePoint = zones[i].path[j + second()]
@@ -189,7 +192,9 @@ function drawPopulation(oneflock, i, qt){
       b.seek(center);
       // b.seek(zones[i].path[]);
     }
-    b.flock(oneflock);
+    var rect = (oneflock[j].pos.x - 100, oneflock[j].pos.x + 100,  oneflock[j].pos.y - 100, oneflock[j].pos.y + 100);
+
+    b.flock(zones[i].quadtree.query(rect));
 
     // b.flock(oneflock);
     b.update();

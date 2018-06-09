@@ -22,7 +22,7 @@ class Boid {
     this.sinAdj = random(0.1, 1.1);
     this.separateScalar = 1;
     this.cohesionScalar = 1;
-    this.alignScaler = 1;
+    this.alignScalar = 1;
   }
   update() {
     this.vel.add(this.acc);
@@ -60,7 +60,7 @@ class Boid {
 
     sepaForce.mult(this.separateScalar);
     coheForce.mult(this.cohesionScalar);
-    alignForce.multi(this.alignScalar); 
+    alignForce.multi(this.alignScalar);
 
     //seekForce.mult(1.3);
     sepaForce.div(0.5);

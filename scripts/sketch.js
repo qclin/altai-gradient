@@ -192,9 +192,11 @@ function drawPopulation(oneflock, i, qt){
       b.seek(center);
       // b.seek(zones[i].path[]);
     }
-    var rect = (oneflock[j].pos.x - 100, oneflock[j].pos.x + 100,  oneflock[j].pos.y - 100, oneflock[j].pos.y + 100);
+
+    var rect = new Rectangle(oneflock[j].pos.x - 10000, oneflock[j].pos.x + 10000,  oneflock[j].pos.y - 10000, oneflock[j].pos.y + 10000);
 
     b.flock(zones[i].quadtree.query(rect));
+
 
     // b.flock(oneflock);
     b.update();

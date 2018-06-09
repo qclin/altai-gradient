@@ -35,14 +35,14 @@ var milli;
 
 var canvasW = 1920;
 var canvasH = 1080;
-
+let boundary
 
 
 function setup() {
 
   createCanvas(canvasW, canvasH);
 
-  let boundary = new Rectangle(0,0,canvasW, canvasH);
+  boundary = new Rectangle(0,0,canvasW, canvasH);
   qtree = new QuadTree(boundary, 4);
 
   grid = new Grid(canvasW, canvasH);
@@ -55,6 +55,7 @@ function setup() {
 
 }
 
+/// for each blob you create a quadtree
 function setupBlob(){
   for (var i = 0 ; i < 4; i ++){
     var x = random(width/2-maxdia,width/2+maxdia);
@@ -63,6 +64,9 @@ function setupBlob(){
 
     addBlob(x, y, dia);
   }
+
+
+
 }
 
 function drawQTree(){
@@ -154,6 +158,7 @@ function draw() {
 
 
 function drawEnvironment(){
+
   for (var i=0; i<zones.length; i++) {
     zones[i].display();
     var oneflock = boids[i];
@@ -161,8 +166,9 @@ function drawEnvironment(){
     // var chooseCos = floor(random(0, cosmos.length))
     // image(cosmos[i], zones[i].x + sin(360) * 8, zones[i].y + sin(360) * 8);
     console.log( "drawEnvironment ---- ", oneflock)
+    var qt = new QuadTree(boundary, 4);
 
-    drawPopulation(oneflock, i)
+    drawPopulation(oneflock, i, qt)
 
   }
 }
@@ -172,6 +178,8 @@ function drawPopulation(oneflock, i){
   /// BOID TYPE 0
   var center = createVector(zones[i].x, zones[i].y)
   for (var j = 0; j < oneflock.length; j++) {
+
+
     var b = oneflock[j];
 
     if(minute()%2 == 1){

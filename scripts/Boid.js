@@ -20,6 +20,9 @@ class Boid {
     this.fillColor = color(155);
     this.col = col
     this.sinAdj = random(0.1, 1.1);
+    this.separateScalar = 1;
+    this.cohesionScalar = 1;
+    this.alignScaler = 1;
   }
   update() {
     this.vel.add(this.acc);
@@ -47,6 +50,17 @@ class Boid {
     var alignForce = this.align(others);
 
     //adjustment
+    // TODO://
+    // multiplying forces with some scalers
+    // change them over time
+    // cohesion and alignforce
+    this.separateScalar = 1;
+    this.cohesionScalar = 1;
+    this.alignScalar = 1;
+
+    sepaForce.mult(this.separateScalar);
+    coheForce.mult(this.cohesionScalar);
+    alignForce.multi(this.alignScalar); 
 
     //seekForce.mult(1.3);
     sepaForce.div(0.5);
@@ -150,10 +164,14 @@ class Boid {
     }
   }
   drawTraces(){
-    for(var i = 0; i < this.history.length; i++){
+    for(var i = 0; i < this.history.length-1; i++){
       var pos = this.history[i];
       fill(100);
-      ellipse(pos.x, pos.y, sin(0)*i+1, sin(0)*i+1);
+      if (i % 2 == 0) {
+        line(this.history[i].x, this.history[i].y, this.history[i + 1].x, this.history[i + 1].y);
+      }
+      // line(this.history[i].x, this.history[i].y, this.history[i + 1].x, this.history[i + 1].y);
+      // ellipse(pos.x, pos.y, sin(0)*i+1, sin(0)*i+1);
 
     }
   }
